@@ -20,6 +20,7 @@
       </div>
 
       <div class="topbar__actions">
+        <a class="chip" href="#catalogo">Catálogo</a>
         <a class="chip" href="#licencas">Licenças</a>
         <a class="chip" href="#contato">Contato</a>
       </div>
@@ -31,8 +32,8 @@
       <div class="hero__left">
         <h1>Beats prontos pra você gravar hoje.</h1>
         <p>
-          Explore o catálogo com busca, filtros e prévias. Clique em <b>Comprar</b> para pagar via Pix ou cartão
-          (checkout externo).
+          Explore o catálogo com busca, filtros e prévias.
+          Clique em <b>Basic / Premium / Exclusive</b> para comprar via Pix/cartão (checkout externo).
         </p>
 
         <div class="stats">
@@ -95,7 +96,7 @@
                 <span>Somente com tags (prod tag no preview)</span>
               </label>
 
-              <button class="btn btn--ghost" id="clear">Limpar</button>
+              <button class="btn btn--ghost" id="clear" type="button">Limpar</button>
             </div>
           </div>
 
@@ -106,7 +107,7 @@
       </div>
     </section>
 
-    <section class="section">
+    <section id="catalogo" class="section">
       <div class="section__head">
         <h2>Catálogo</h2>
         <div class="muted" id="resultCount">—</div>
@@ -130,8 +131,8 @@
           <div class="license__title">Basic</div>
           <ul>
             <li>Uso não-exclusivo</li>
-            <li>MP3/WAV (defina no seu checkout)</li>
-            <li>Distribuição limitada (defina o limite)</li>
+            <li>MP3/WAV (você define)</li>
+            <li>Distribuição limitada (você define)</li>
           </ul>
         </div>
         <div class="license">
@@ -153,7 +154,7 @@
       </div>
 
       <p class="muted">
-        Ajuste os termos conforme sua regra. O site é só catálogo — o checkout cuida do pagamento e entrega.
+       Ajuste os termos conforme sua regra. O site é só catálogo — o checkout cuida do pagamento/entrega.
       </p>
     </section>
 
@@ -173,27 +174,13 @@
   <footer class="footer">
     <div class="wrap footer__inner">
       <div class="muted">© <span id="year"></span> • Seu Nome • Catálogo de Beats</div>
-      <div class="muted">Feito para ser rápido: HTML/CSS/JS puro.</div>
+      <div class="muted">HTML/CSS/JS puro • rápido e leve</div>
     </div>
   </footer>
 
-  <!-- player global (um só áudio pra controlar tudo) -->
-  <audio id="audio"></audio>
+  <!-- player global: só um beat toca por vez -->
+  <audio id="audio" preload="none"></audio>
 
   <script src="app.js"></script>
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-
-<script>
-if (window.netlifyIdentity) {
-  window.netlifyIdentity.on("init", user => {
-    if (!user) {
-      window.netlifyIdentity.on("login", () => {
-        document.location.href = "/admin/";
-      });
-    }
-  });
-}
-</script>
 </body>
-
 </html>

@@ -1,7 +1,5 @@
 :root{
   --bg:#0b0d12;
-  --card:#121626;
-  --card2:#0f1320;
   --text:#e9ecf5;
   --muted:#9aa3b2;
   --line:rgba(255,255,255,.08);
@@ -16,9 +14,10 @@ html,body{ height:100%; }
 body{
   margin:0;
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
-  background: radial-gradient(1200px 600px at 20% 0%, rgba(124,92,255,.18), transparent 60%),
-              radial-gradient(900px 600px at 90% 10%, rgba(40,215,166,.12), transparent 55%),
-              var(--bg);
+  background:
+    radial-gradient(1200px 600px at 20% 0%, rgba(124,92,255,.18), transparent 60%),
+    radial-gradient(900px 600px at 90% 10%, rgba(40,215,166,.12), transparent 55%),
+    var(--bg);
   color:var(--text);
 }
 
@@ -174,7 +173,7 @@ input::placeholder{ color: rgba(154,163,178,.65); }
 }
 .meta{
   margin-top: 6px;
-  color: var(--muted);
+  color:var(--muted);
   font-size: 12px;
   display:flex;
   gap:10px;
@@ -207,19 +206,20 @@ input::placeholder{ color: rgba(154,163,178,.65); }
 }
 .time{ color: var(--muted); font-variant-numeric: tabular-nums; font-size: 12px; }
 
-.bar{
+/* Waveform (barras finas arredondadas) */
+.wave{
   width:100%;
-  height: 10px;
-  border-radius: 999px;
-  background: rgba(255,255,255,.06);
+  height: 58px;
+  border-radius: 12px;
   border: 1px solid var(--line);
-  overflow:hidden;
+  background: rgba(255,255,255,.04);
   cursor:pointer;
+  display:block;
 }
-.fill{
-  height:100%;
-  width:0%;
-  background: linear-gradient(90deg, var(--accent), var(--accent2));
+
+.wave--loading{
+  opacity: .7;
+  filter: saturate(.9);
 }
 
 .card__bottom{
@@ -227,14 +227,25 @@ input::placeholder{ color: rgba(154,163,178,.65); }
   padding: 0 14px 14px;
 }
 .buy{
-  flex: 1 1 160px;
+  flex: 1 1 120px;
   display:flex; align-items:center; justify-content:center;
   border-radius: 14px;
-  padding: 12px 12px;
+  padding: 12px 10px;
   font-weight: 900;
   border: 1px solid var(--line);
-  background: linear-gradient(135deg, rgba(124,92,255,.35), rgba(40,215,166,.15));
+  background: rgba(255,255,255,.03);
+  cursor:pointer;
 }
+.buy--basic{
+  background: linear-gradient(135deg, rgba(124,92,255,.30), rgba(255,255,255,.03));
+}
+.buy--premium{
+  background: linear-gradient(135deg, rgba(40,215,166,.22), rgba(255,255,255,.03));
+}
+.buy--exclusive{
+  background: linear-gradient(135deg, rgba(255,255,255,.10), rgba(124,92,255,.12));
+}
+
 .small{
   flex: 0 0 auto;
   padding: 12px 12px;
@@ -242,6 +253,7 @@ input::placeholder{ color: rgba(154,163,178,.65); }
   border: 1px solid var(--line);
   background: rgba(255,255,255,.03);
   font-weight: 800;
+  cursor:pointer;
 }
 
 .empty{

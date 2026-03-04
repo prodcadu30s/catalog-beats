@@ -23,12 +23,19 @@ collections:
             fields:
               - { label: "ID (sem espaços)", name: "id", widget: "string", hint: "ex: trap-night-140" }
               - { label: "Título", name: "title", widget: "string" }
-              - { label: "Estilo", name: "style", widget: "string" }
+              - { label: "Estilo", name: "style", widget: "string", hint: "ex: Trap, Drill, Boom Bap" }
               - { label: "BPM", name: "bpm", widget: "number", value_type: "int", min: 40, max: 220 }
-              - { label: "Key", name: "key", widget: "string", required: false }
+              - { label: "Key", name: "key", widget: "string", required: false, hint: "ex: Dm" }
               - { label: "Tagged (preview com tag)", name: "tagged", widget: "boolean", default: true }
               - { label: "Data", name: "date", widget: "datetime", format: "YYYY-MM-DD", time_format: false }
-              - label: "Preview (MP3)"
+
+              - label: "Preview (MP3) — arraste e solte"
                 name: "preview_url"
                 widget: "file"
-              - { label: "Link de compra (Pix/Cartão)", name: "buy_url", widget: "string" }
+                media_library:
+                  config:
+                    multiple: false
+
+              - { label: "Link BASIC (Pix/Cartão)", name: "buy_basic_url", widget: "string", required: false }
+              - { label: "Link PREMIUM (Pix/Cartão)", name: "buy_premium_url", widget: "string", required: false }
+              - { label: "Link EXCLUSIVE (Pix/Cartão)", name: "buy_exclusive_url", widget: "string", required: false }
