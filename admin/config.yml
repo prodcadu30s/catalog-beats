@@ -1,5 +1,6 @@
 backend:
-  name: git-gateway
+  name: github
+  repo: prodcadu30s/catalog-beats
   branch: main
 
 media_folder: "previews"
