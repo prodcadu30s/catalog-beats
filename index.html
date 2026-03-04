@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Catálogo de Beats</title>
+  <meta name="description" content="Catálogo de beats com prévias, busca, filtros e compra via Pix/cartão." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="wrap topbar__inner">
+      <div class="brand">
+        <div class="brand__logo" aria-hidden="true"></div>
+        <div class="brand__text">
+          <div class="brand__name">SEU NOME / PROD</div>
+          <div class="brand__sub">Catálogo de Beats • Pix + Cartão</div>
+        </div>
+      </div>
+
+      <div class="topbar__actions">
+        <a class="chip" href="#licencas">Licenças</a>
+        <a class="chip" href="#contato">Contato</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="hero__left">
+        <h1>Beats prontos pra você gravar hoje.</h1>
+        <p>
+          Explore o catálogo com busca, filtros e prévias. Clique em <b>Comprar</b> para pagar via Pix ou cartão
+          (checkout externo).
+        </p>
+
+        <div class="stats">
+          <div class="stat">
+            <div class="stat__num" id="statTotal">—</div>
+            <div class="stat__label">beats</div>
+          </div>
+          <div class="stat">
+            <div class="stat__num" id="statStyles">—</div>
+            <div class="stat__label">estilos</div>
+          </div>
+          <div class="stat">
+            <div class="stat__num" id="statBpm">—</div>
+            <div class="stat__label">faixa BPM</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero__right">
+        <div class="panel">
+          <div class="panel__title">Buscar e filtrar</div>
+
+          <div class="controls">
+            <label class="field">
+              <span>Busca</span>
+              <input id="q" type="search" placeholder="ex.: drill, love, 140, Dm..." autocomplete="off" />
+            </label>
+
+            <div class="row">
+              <label class="field">
+                <span>Estilo</span>
+                <select id="style"></select>
+              </label>
+
+              <label class="field">
+                <span>Ordenar</span>
+                <select id="sort">
+                  <option value="recent">Mais recentes</option>
+                  <option value="bpmAsc">BPM ↑</option>
+                  <option value="bpmDesc">BPM ↓</option>
+                  <option value="title">A–Z</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="row">
+              <label class="field">
+                <span>BPM mínimo</span>
+                <input id="bpmMin" type="number" min="1" max="300" step="1" placeholder="ex.: 120" />
+              </label>
+              <label class="field">
+                <span>BPM máximo</span>
+                <input id="bpmMax" type="number" min="1" max="300" step="1" placeholder="ex.: 160" />
+              </label>
+            </div>
+
+            <div class="row">
+              <label class="field field--check">
+                <input id="onlyTagged" type="checkbox" />
+                <span>Somente com tags (prod tag no preview)</span>
+              </label>
+
+              <button class="btn btn--ghost" id="clear">Limpar</button>
+            </div>
+          </div>
+
+          <div class="hint">
+            Dica: deixe os previews em <b>128kbps</b> com sua tag de voz.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section__head">
+        <h2>Catálogo</h2>
+        <div class="muted" id="resultCount">—</div>
+      </div>
+
+      <div id="grid" class="grid" aria-live="polite"></div>
+
+      <div id="empty" class="empty hidden">
+        <div class="empty__title">Nada encontrado</div>
+        <div class="empty__sub">Tente ajustar busca/filtros.</div>
+      </div>
+    </section>
+
+    <section id="licencas" class="section">
+      <div class="section__head">
+        <h2>Licenças</h2>
+      </div>
+
+      <div class="licenses">
+        <div class="license">
+          <div class="license__title">Basic</div>
+          <ul>
+            <li>Uso não-exclusivo</li>
+            <li>MP3/WAV (defina no seu checkout)</li>
+            <li>Distribuição limitada (defina o limite)</li>
+          </ul>
+        </div>
+        <div class="license">
+          <div class="license__title">Premium</div>
+          <ul>
+            <li>Uso não-exclusivo</li>
+            <li>WAV + opcional trackouts</li>
+            <li>Mais liberdade de monetização</li>
+          </ul>
+        </div>
+        <div class="license">
+          <div class="license__title">Exclusive</div>
+          <ul>
+            <li>Venda exclusiva</li>
+            <li>Beat sai do catálogo</li>
+            <li>Stems/trackouts incluídos</li>
+          </ul>
+        </div>
+      </div>
+
+      <p class="muted">
+        Ajuste os termos conforme sua regra. O site é só catálogo — o checkout cuida do pagamento e entrega.
+      </p>
+    </section>
+
+    <section id="contato" class="section">
+      <div class="section__head">
+        <h2>Contato</h2>
+      </div>
+
+      <div class="contact">
+        <a class="chip" href="https://instagram.com/SEUINSTAGRAM" target="_blank" rel="noreferrer">Instagram</a>
+        <a class="chip" href="mailto:seuemail@exemplo.com">Email</a>
+        <a class="chip" href="https://wa.me/55SEUNUMERO" target="_blank" rel="noreferrer">WhatsApp</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer__inner">
+      <div class="muted">© <span id="year"></span> • Seu Nome • Catálogo de Beats</div>
+      <div class="muted">Feito para ser rápido: HTML/CSS/JS puro.</div>
+    </div>
+  </footer>
+
+  <!-- player global (um só áudio pra controlar tudo) -->
+  <audio id="audio"></audio>
+
+  <script src="app.js"></script>
+</body>
+</html>

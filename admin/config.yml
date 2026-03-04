@@ -1,0 +1,34 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "previews"
+public_folder: "/previews"
+
+publish_mode: simple
+
+collections:
+  - name: "catalogo"
+    label: "Catálogo"
+    files:
+      - name: "beats"
+        label: "Beats"
+        file: "beats.json"
+        format: "json"
+        fields:
+          - label: "Beats"
+            name: "beats"
+            widget: "list"
+            summary: "{{fields.title}} • {{fields.style}} • {{fields.bpm}} BPM"
+            fields:
+              - { label: "ID (sem espaços)", name: "id", widget: "string", hint: "ex: trap-night-140" }
+              - { label: "Título", name: "title", widget: "string" }
+              - { label: "Estilo", name: "style", widget: "string" }
+              - { label: "BPM", name: "bpm", widget: "number", value_type: "int", min: 40, max: 220 }
+              - { label: "Key", name: "key", widget: "string", required: false }
+              - { label: "Tagged (preview com tag)", name: "tagged", widget: "boolean", default: true }
+              - { label: "Data", name: "date", widget: "datetime", format: "YYYY-MM-DD", time_format: false }
+              - label: "Preview (MP3)"
+                name: "preview_url"
+                widget: "file"
+              - { label: "Link de compra (Pix/Cartão)", name: "buy_url", widget: "string" }
