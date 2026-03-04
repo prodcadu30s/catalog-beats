@@ -2,6 +2,8 @@ backend:
   name: github
   repo: prodcadu30s/catalog-beats
   branch: main
+  base_url: https://auth.decapcms.org
+  auth_endpoint: auth
 
 media_folder: "previews"
 public_folder: "/previews"
