@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Licenças</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="wrap topbar__inner">
+      <a class="brand" href="/" style="text-decoration:none;">
+        <div class="brand__logo" id="brandLogo" aria-hidden="true"></div>
+        <div class="brand__text">
+          <div class="brand__name" id="brandName">—</div>
+          <div class="brand__sub" id="brandSub">—</div>
+        </div>
+      </a>
+
+      <div class="topbar__actions">
+        <a class="chip" href="/">Catálogo</a>
+        <a class="chip" href="/licencas.html">Licenças</a>
+        <a class="chip" href="/#contato">Contato</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="section">
+      <div class="section__head">
+        <h2 id="licTitle">Licenças</h2>
+      </div>
+
+      <p class="muted" id="licIntro">—</p>
+
+      <div id="licGrid" class="licenses"></div>
+
+      <p class="muted" id="licNotes" style="margin-top:12px;">—</p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer__inner">
+      <div class="muted">© <span id="year"></span> • <span id="footName">Seu Nome</span></div>
+      <div class="muted"><a class="chip" href="/">Voltar ao catálogo</a></div>
+    </div>
+  </footer>
+
+  <script>
+    const $ = (s) => document.querySelector(s);
+    const esc = (s) => (s ?? "").toString()
+      .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;").replaceAll("'","&#039;");
+
+    function mdToHtml(text){
+      // mini conversor: quebra linha + bullets simples
+      const t = (text ?? "").toString();
+      const lines = t.split("\n");
+      let html = "";
+      let inList = false;
+
+      for(const line of lines){
+        const l = line.trim();
+        if (l.startsWith("- ")) {
+          if (!inList) { html += "<ul>"; inList = true; }
+          html += `<li>${esc(l.slice(2))}</li>`;
+        } else if (l === "") {
+          if (inList) { html += "</ul>"; inList = false; }
+          html += "<br/>";
+        } else {
+          if (inList) { html += "</ul>"; inList = false; }
+          html += `<p class="muted">${esc(l)}</p>`;
+        }
+      }
+      if (inList) html += "</ul>";
+      return html;
+    }
+
+    async function init(){
+      $("#year").textContent = new Date().getFullYear();
+
+      const res = await fetch("/site.json", { cache:"no-store" });
+      const site = await res.json();
+
+      const brand = site.brand || {};
+      $("#brandName").textContent = brand.name || "—";
+      $("#brandSub").textContent = brand.subtitle || "—";
+      $("#footName").textContent = brand.name || "—";
+
+      // logo: se tiver logo_url, usa como background
+      const logo = $("#brandLogo");
+      if (brand.logo_url) {
+        logo.style.background = `center / cover no-repeat url('${brand.logo_url}')`;
+      }
+
+      const lic = site.licenses_page || {};
+      $("#licTitle").textContent = lic.title || "Licenças";
+      $("#licIntro").textContent = lic.intro || "";
+
+      const grid = $("#licGrid");
+      const sections = Array.isArray(lic.sections) ? lic.sections : [];
+      grid.innerHTML = sections.map(sec => `
+        <div class="license">
+          <div class="license__title">${esc(sec.title)}</div>
+          <div>${mdToHtml(sec.body)}</div>
+        </div>
+      `).join("");
+
+      $("#licNotes").textContent = lic.notes || "";
+    }
+
+    init().catch(() => alert("Erro ao carregar site.json"));
+  </script>
+</body>
+</html>
