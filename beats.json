@@ -8,7 +8,11 @@
       "id": "mechanic",
       "style": "trap/experimental",
       "bpm": 140,
-      "key": "F#m"
+      "key": "F#m",
+      "tags": [
+        "Drake",
+        "Travis Scott"
+      ]
     }
   ]
 }

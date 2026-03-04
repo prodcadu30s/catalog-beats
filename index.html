@@ -69,6 +69,13 @@
               </label>
 
               <label class="field">
+                <span>Tag</span>
+                <select id="tag"></select>
+              </label>
+            </div>
+
+            <div class="row">
+              <label class="field">
                 <span>Ordenar</span>
                 <select id="sort">
                   <option value="recent">Mais recentes</option>
@@ -77,6 +84,8 @@
                   <option value="title">A–Z</option>
                 </select>
               </label>
+
+              <div></div>
             </div>
 
             <div class="row">
@@ -170,6 +179,31 @@
       </div>
     </section>
   </main>
+  <!-- Player global fixo -->
+  <div class="playerbar" id="playerBar" hidden>
+    <div class="wrap playerbar__inner">
+      <button class="gp__btn" id="gpPlay" type="button" aria-label="Play/Pause">▶</button>
+
+      <div class="gp__info">
+        <div class="gp__title" id="gpTitle">—</div>
+        <div class="gp__meta" id="gpMeta">—</div>
+
+        <div class="gp__progress" id="gpProgress" role="progressbar" aria-label="Progresso">
+          <div class="gp__fill" id="gpFill"></div>
+        </div>
+      </div>
+
+      <div class="gp__right">
+        <div class="gp__time"><span id="gpCur">0:00</span> / <span id="gpDur">—</span></div>
+        <div class="gp__actions">
+          <button class="gp__buy gp__buy--basic" id="gpBasic" type="button" hidden>Basic</button>
+          <button class="gp__buy gp__buy--premium" id="gpPremium" type="button" hidden>Premium</button>
+          <button class="gp__buy gp__buy--exclusive" id="gpExclusive" type="button" hidden>Exclusive</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
   <footer class="footer">
     <div class="wrap footer__inner">

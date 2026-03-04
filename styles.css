@@ -305,3 +305,99 @@ input::placeholder{ color: rgba(154,163,178,.65); }
   .row{ grid-template-columns: 1fr; }
   .topbar__actions{ display:none; }
 }
+
+/* Espaço para o player fixo */
+body{ padding-bottom: 92px; }
+
+/* Player global fixo */
+.playerbar{
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  border-top: 1px solid var(--line);
+  background: rgba(11,13,18,.82);
+  backdrop-filter: blur(12px);
+  z-index: 50;
+}
+.playerbar__inner{
+  display:flex;
+  align-items:center;
+  gap: 14px;
+  padding: 12px 0;
+}
+
+.gp__btn{
+  width: 46px; height: 46px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: radial-gradient(60% 70% at 30% 20%, rgba(124,92,255,.45), rgba(255,255,255,.06));
+  box-shadow: 0 12px 25px rgba(124,92,255,.18);
+  cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  font-weight: 900;
+  color: var(--text);
+}
+
+.gp__info{ flex: 1 1 auto; min-width: 0; }
+.gp__title{
+  font-weight: 900;
+  letter-spacing: -.2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.gp__meta{
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gp__progress{
+  margin-top: 8px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid var(--line);
+  overflow:hidden;
+  cursor:pointer;
+}
+.gp__fill{
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+}
+
+.gp__right{
+  display:flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+.gp__time{
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+}
+
+.gp__actions{ display:flex; gap: 8px; flex-wrap: wrap; justify-content:flex-end; }
+
+.gp__buy{
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px 10px;
+  font-weight: 900;
+  cursor:pointer;
+  color: var(--text);
+  background: rgba(255,255,255,.03);
+}
+.gp__buy--basic{ background: linear-gradient(135deg, rgba(124,92,255,.30), rgba(255,255,255,.03)); }
+.gp__buy--premium{ background: linear-gradient(135deg, rgba(40,215,166,.22), rgba(255,255,255,.03)); }
+.gp__buy--exclusive{ background: linear-gradient(135deg, rgba(255,255,255,.10), rgba(124,92,255,.12)); }
+
+@media (max-width: 560px){
+  body{ padding-bottom: 122px; }
+  .playerbar__inner{ align-items:flex-start; }
+  .gp__right{ align-items:flex-start; }
+}

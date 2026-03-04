@@ -7,11 +7,26 @@ const resultCount = $("#resultCount");
 
 const q = $("#q");
 const styleSel = $("#style");
+const tagSel = $("#tag");
 const sortSel = $("#sort");
 const bpmMin = $("#bpmMin");
 const bpmMax = $("#bpmMax");
 const onlyTagged = $("#onlyTagged");
 const clearBtn = $("#clear");
+
+// Player global fixo
+const playerBar = $("#playerBar");
+const gpPlay = $("#gpPlay");
+const gpTitle = $("#gpTitle");
+const gpMeta = $("#gpMeta");
+const gpProgress = $("#gpProgress");
+const gpFill = $("#gpFill");
+const gpCur = $("#gpCur");
+const gpDur = $("#gpDur");
+const gpBasic = $("#gpBasic");
+const gpPremium = $("#gpPremium");
+const gpExclusive = $("#gpExclusive");
+
 
 let BEATS = [];
 let filtered = [];
@@ -22,6 +37,8 @@ let currentCard = null;
 // caches (performance)
 const peaksCache = new Map(); // url -> peaks[]
 const durationCache = new Map(); // url -> seconds
+const playCountCache = new Map(); // beatId -> count
+let countedForCurrentLoad = false;
 
 function fmtTime(sec) {
   if (!isFinite(sec) || sec < 0) return "0:00";
@@ -42,6 +59,13 @@ function uniq(arr) {
   return [...new Set(arr)];
 }
 
+function hasTag(b, tag){
+  if (!tag) return true;
+  const tags = Array.isArray(b.tags) ? b.tags : (typeof b.tags === 'string' ? [b.tags] : []);
+  const normTag = normalize(tag);
+  return tags.some(t => normalize(t).includes(normTag));
+}
+
 function escapeHtml(s) {
   return (s ?? "")
     .toString()
@@ -51,6 +75,15 @@ function escapeHtml(s) {
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
 }
+
+function renderTagsBadges(b){
+  const tags = Array.isArray(b.tags) ? b.tags : (typeof b.tags === "string" ? [b.tags] : []);
+  const clean = tags.map(t => (t ?? "").toString().trim()).filter(Boolean);
+  if (!clean.length) return "";
+  // mostra até 2 tags pra não poluir
+  return clean.slice(0,2).map(t => `<span class="badge">${escapeHtml(t)}</span>`).join("");
+}
+
 
 function setStats(list) {
   $("#statTotal").textContent = `${list.length}`;
@@ -76,6 +109,20 @@ function buildStyleOptions() {
   `;
 }
 
+
+function buildTagOptions() {
+  // tags podem ser string única ou lista
+  const tags = [];
+  for (const b of BEATS) {
+    if (Array.isArray(b.tags)) tags.push(...b.tags);
+    else if (typeof b.tags === "string" && b.tags.trim()) tags.push(b.tags.trim());
+  }
+  const uniqTags = [...new Set(tags.map(t => t.trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+  tagSel.innerHTML = `
+    <option value="">Todas</option>
+    ${uniqTags.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join("")}
+  `;
+}
 function cardHtml(b) {
   const isCurrent = b.id === currentId;
   const playIcon = isCurrent && !audio.paused ? "❚❚" : "▶";
@@ -94,6 +141,8 @@ function cardHtml(b) {
           <span class="badge">${escapeHtml(String(b.bpm ?? "—"))} BPM</span>
           <span class="badge">Key ${escapeHtml(b.key || "—")}</span>
           ${b.tagged ? `<span class="badge">TAGGED</span>` : ``}
+          ${renderTagsBadges(b)}
+          <span class="badge" data-plays>0 plays</span>
         </div>
       </div>
       <div class="muted">${escapeHtml(b.date || "")}</div>
@@ -168,6 +217,7 @@ async function togglePlay(beat, card) {
     audio.preload = "metadata"; // metadata só depois do clique
     audio.src = beat.preview_url;
     audio.load();
+    countedForCurrentLoad = false;
   }
 
   // garantir duração real no card (metadata)
@@ -176,10 +226,22 @@ async function togglePlay(beat, card) {
   // gerar waveform apenas quando o usuário clicar play pela primeira vez
   await ensureWaveformReady(beat, card);
 
-  audio.play().catch(() => {
+  audio.play().then(() => {
+    if (!countedForCurrentLoad) {
+      countedForCurrentLoad = true;
+      const n = incPlayCount(beat.id);
+      // atualiza badge no card
+      const c = document.getElementById(`card-${beat.id}`);
+      if (c) renderPlayCount(c, beat.id);
+      // atualiza player global
+      updateGlobalPlays(n);
+    }
+  }).catch(() => {
     alert("Seu navegador bloqueou o play. Clique novamente.");
   });
 
+  showGlobalPlayer(beat);
+  if (gpPlay) gpPlay.textContent = "❚❚";
   updateCardUI(card, false);
 }
 
@@ -207,12 +269,14 @@ function sortFiltered() {
 function applyFilters() {
   const term = normalize(q.value.trim());
   const style = styleSel.value.trim();
+  const tag = tagSel.value.trim();
   const minB = bpmMin.value ? Number(bpmMin.value) : null;
   const maxB = bpmMax.value ? Number(bpmMax.value) : null;
   const taggedOnly = !!onlyTagged.checked;
 
   filtered = BEATS.filter((b) => {
     if (style && b.style !== style) return false;
+    if (tag && !hasTag(b, tag)) return false;
     if (taggedOnly && !b.tagged) return false;
 
     const bpm = Number(b.bpm);
@@ -282,6 +346,7 @@ function render() {
 
     // desenha um placeholder “flat” (sem baixar nada)
     drawWavePlaceholder(wave);
+    renderPlayCount(card, b.id);
   });
 
   // se o beat atual sumiu da lista, para
@@ -292,10 +357,26 @@ function render() {
 }
 
 function bindControls() {
-  [q, styleSel, sortSel, bpmMin, bpmMax, onlyTagged].forEach((el) => {
+  [q, styleSel, tagSel, sortSel, bpmMin, bpmMax, onlyTagged].forEach((el) => {
     el.addEventListener("input", applyFilters);
     el.addEventListener("change", applyFilters);
   });
+
+  if (gpPlay) {
+    gpPlay.addEventListener("click", () => {
+      if (!currentId) return;
+      if (audio.paused) audio.play(); else audio.pause();
+    });
+  }
+
+  if (gpProgress) {
+    gpProgress.addEventListener("click", (e) => {
+      if (!currentId || !isFinite(audio.duration) || audio.duration <= 0) return;
+      const rect = gpProgress.getBoundingClientRect();
+      const pct = Math.min(Math.max(0, (e.clientX - rect.left) / rect.width), 1);
+      audio.currentTime = audio.duration * pct;
+    });
+  }
 
   clearBtn.addEventListener("click", () => {
     q.value = "";
@@ -329,6 +410,31 @@ function setDurationCached(url, seconds) {
   durationCache.set(url, seconds);
   localStorage.setItem(`dur:${url}`, String(seconds));
 }
+
+
+/* ==========================
+   CONTADOR DE PLAYS (localStorage)
+   ========================== */
+function getPlayCount(id){
+  if (!id) return 0;
+  if (playCountCache.has(id)) return playCountCache.get(id);
+  const v = Number(localStorage.getItem(`plays:${id}`) || "0");
+  const n = isFinite(v) && v > 0 ? Math.floor(v) : 0;
+  playCountCache.set(id, n);
+  return n;
+}
+function incPlayCount(id){
+  const n = getPlayCount(id) + 1;
+  playCountCache.set(id, n);
+  localStorage.setItem(`plays:${id}`, String(n));
+  return n;
+}
+function renderPlayCount(card, id){
+  const el = card.querySelector("[data-plays]");
+  if (!el) return;
+  el.textContent = `${getPlayCount(id)} plays`;
+}
+
 
 function waitForEvent(target, eventName, timeoutMs = 8000) {
   return new Promise((resolve, reject) => {
@@ -558,6 +664,8 @@ function currentProgress() {
 
 audio.addEventListener("timeupdate", () => {
   if (!currentId) return;
+  updateGlobalTime(audio.currentTime, audio.duration);
+  updateGlobalProgress();
   const card = document.getElementById(`card-${currentId}`);
   if (!card) return;
 
@@ -599,12 +707,16 @@ audio.addEventListener("pause", () => {
   if (!currentId) return;
   const card = document.getElementById(`card-${currentId}`);
   if (card) updateCardUI(card, true);
+  if (gpPlay) gpPlay.textContent = "▶";
 });
 
 audio.addEventListener("play", () => {
   if (!currentId) return;
   const card = document.getElementById(`card-${currentId}`);
-  if (card) updateCardUI(card, false);
+  if (card) showGlobalPlayer(beat);
+  if (gpPlay) gpPlay.textContent = "❚❚";
+  updateCardUI(card, false);
+  if (gpPlay) gpPlay.textContent = "❚❚";
 });
 
 async function init() {
@@ -621,11 +733,13 @@ async function init() {
     // compat: se alguém ainda usar buy_url antigo, joga em basic
     buy_basic_url: b.buy_basic_url || b.buy_url || "",
     buy_premium_url: b.buy_premium_url || "",
-    buy_exclusive_url: b.buy_exclusive_url || ""
+    buy_exclusive_url: b.buy_exclusive_url || "",
+    tags: b.tags || []
   }));
 
   setStats(BEATS);
   buildStyleOptions();
+  buildTagOptions();
   bindControls();
   applyFilters();
 }
